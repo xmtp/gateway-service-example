@@ -18,6 +18,12 @@ Example app running the gateway service for the decentralized XMTP network
    - Local development: `./dev/start`
    - Docker: `./dev/up`
 
+## Customizing
+
+The Gateway Service is designed to subsidize publishing to the XMTP network. Before deploying publicly, you will want to customize the authorization logic to ensure that only valid requests from your users are allowed through.
+
+Learn more about customizing your Gateway Service [here](https://docs.xmtp.org/fund-agents-apps/run-gateway).
+
 ## Installing the xmtpd-cli (optional)
 
 ### MacOS
