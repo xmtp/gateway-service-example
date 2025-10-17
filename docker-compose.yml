@@ -2,8 +2,9 @@ services:
   redis:
     image: redis:latest
     container_name: redis
+    command: redis-server --port 6777
     ports:
-      - "6777:6379"
+      - "6777:6777"
   gateway:
     depends_on:
       - redis
