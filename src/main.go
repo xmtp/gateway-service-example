@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/xmtp/xmtpd/pkg/gateway"
@@ -9,6 +10,10 @@ import (
 
 func main() {
 	gatewayService, err := gateway.NewGatewayServiceBuilder(gateway.MustLoadConfig()).
+		WithIdentityFn(func(ctx context.Context) (gateway.Identity, error) {
+			fmt.Println("Received request")
+			return gateway.IPIdentityFn(ctx)
+		}).
 		WithAuthorizers(func(ctx context.Context, identity gateway.Identity, req gateway.PublishRequestSummary) (bool, error) {
 			return true, nil
 		}).
