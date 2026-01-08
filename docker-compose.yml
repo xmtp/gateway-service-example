@@ -1,7 +1,6 @@
 services:
   redis:
     image: redis:latest
-    container_name: redis
     command: redis-server --port 6777
     ports:
       - "6777:6777"
@@ -12,5 +11,10 @@ services:
       context: .
       dockerfile: Dockerfile
     env_file: .env
+    environment:
+      # Match xmtpd gateway config expectations
+      - XMTPD_API_PORT=5052
+      # If xmtpd gateway config uses XMTPD_REDIS_URL, set it here:
+      - XMTPD_REDIS_URL=redis://redis:6777
     ports:
-      - 5872:5872
+      - "5052:5052"
