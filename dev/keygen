@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+tmpdir="$(mktemp -d)"
+priv="$tmpdir/jwt_private_key.pem"
+pub="$tmpdir/jwt_public_key.pem"
+
+# Generate ES256 (P-256) private key
+openssl ecparam -name prime256v1 -genkey -noout -out "$priv"
+# Extract public key
+openssl ec -in "$priv" -pubout -out "$pub" >/dev/null 2>&1
+
+escape_pem() {
+  # turn newlines into literal \n for .env
+  awk '{printf "%s\\n", $0}' "$1"
+}
+
+echo "JWT_PRIVATE_KEY=\"$(escape_pem "$priv")\""
+echo "JWT_PUBLIC_KEY=\"$(escape_pem "$pub")\""
+
+rm -rf "$tmpdir"
