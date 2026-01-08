@@ -1,7 +1,25 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-set -a
-. .env
-set +a
+# Always run from repo root (so relative paths work)
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
 
-go run src/main.go
+# Optional: dev/start [allowall|jwt_es256]
+MODE="${1:-}"
+
+# Load .env if present
+if [[ -f .env ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  . .env
+  set +a
+fi
+
+# If MODE argument provided, override env
+if [[ -n "${MODE}" ]]; then
+  export GATEWAY_AUTH_MODE="${MODE}"
+fi
+
+echo "Starting gateway (GATEWAY_AUTH_MODE=${GATEWAY_AUTH_MODE:-allowall})"
+exec go run ./cmd/gateway

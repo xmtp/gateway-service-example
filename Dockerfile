@@ -9,13 +9,12 @@ RUN apk add --no-cache build-base
 WORKDIR /app
 
 COPY go.mod go.sum ./
-
 RUN go mod download
 
 COPY . .
 
-ARG VERSION=0.1
-RUN go build -ldflags="-X 'main.Version=$VERSION'" -o bin/xmtpd-gateway src/main.go
+# Build the gateway binary from cmd/gateway
+RUN go build -o /out/xmtpd-gateway ./cmd/gateway
 
 # ACTUAL IMAGE -------------------------------------------------------
 
@@ -30,6 +29,6 @@ ENV GOLOG_LOG_FMT=json
 
 RUN apk add --no-cache curl
 
-COPY --from=builder /app/bin/xmtpd-gateway /usr/bin/
+COPY --from=builder /out/xmtpd-gateway /usr/bin/xmtpd-gateway
 
 ENTRYPOINT ["/usr/bin/xmtpd-gateway"]

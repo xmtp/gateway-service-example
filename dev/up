@@ -1,3 +1,30 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-docker-compose up --build gateway
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
+# Optional: dev/up [allowall|jwt_es256]
+MODE="${1:-}"
+
+# Choose compose command (v2 preferred)
+if command -v docker-compose >/dev/null 2>&1; then
+  COMPOSE=(docker-compose)
+else
+  COMPOSE=(docker compose)
+fi
+
+# We prefer feeding env via --env-file so docker always sees it even if the shell doesn't.
+ENV_ARGS=()
+if [[ -f .env ]]; then
+  ENV_ARGS=(--env-file .env)
+fi
+
+# If MODE is provided, override GATEWAY_AUTH_MODE for this invocation only.
+# Note: docker compose supports env var overrides from the current shell in addition to --env-file.
+if [[ -n "${MODE}" ]]; then
+  export GATEWAY_AUTH_MODE="${MODE}"
+fi
+
+echo "Bringing up gateway (GATEWAY_AUTH_MODE=${GATEWAY_AUTH_MODE:-allowall})"
+"${COMPOSE[@]}" "${ENV_ARGS[@]}" up --build gateway
