@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"time"
 
 	"github.com/xmtp/xmtpd/pkg/gateway"
 )
@@ -17,5 +18,5 @@ func main() {
 		log.Fatalf("Failed to build gateway service: %v", err)
 	}
 
-	gatewayService.WaitForShutdown()
+	gatewayService.WaitForShutdown(10 * time.Second)
 }
